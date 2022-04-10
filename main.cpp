@@ -31,8 +31,8 @@ double norm(double *u, int n, double h)
       }
     }  
   }
-  // return sqrt(sum);
-  return max;
+  return sqrt(sum);
+  // return max;
 }
 
 void solveMatrix (int n, double *a, double *c, double *b, double *f, double *x)
@@ -59,14 +59,10 @@ void solveMatrix (int n, double *a, double *c, double *b, double *f, double *x)
 
 void difference_scheme(double *a, double *b, double *c, int n, double tau, double h)
 {
-
     for (int i = 0; i < n; ++i) {
         a[i] = tau/2/h/h;
         c[i] = -1 - tau/h/h;
         b[i] = tau/2/h/h;
-        // a[i] = tau/2/h/h;
-        // c[i] = -tau/h/h - tau*tau/2;
-        // b[i] = tau/2/h/h;
     }
     a[0] = 0;
     b[n-1] = 0;
@@ -75,7 +71,8 @@ void difference_scheme(double *a, double *b, double *c, int n, double tau, doubl
 double TAU(double h)
 {
   return h/2/sin(pi*h);
-  // return 2/h/h*sin(pi*h);
+  // return 2*sin(pi*h)/h/h;
+  // return 1;
 }
 
 
@@ -85,27 +82,22 @@ double LU(double x, double y, double z, double h)
   //       or
   //−(uk−1,m − 2uk,m + uk+1,m)/h^2
   return -(x-2*y+z)/h/h;
-  // return -(x-(2 + h*h*TAU(h))*y+z)/h/h;
 }
 
 void F1(double *f, int m, int n, double tau, double h, double *u)
 {
-    // f[0] = 0;
     for  (int i = 0; i < n - 2; ++i){
-      f[i] = tau/2*(LU(u[m-1+n*(i + 1)],u[m + n*(i + 1)],u[m+1 + n*(i + 1)],h) - func(i + 1,m,h)) - u[m + n*(i + 1)];
-      // f[i] = tau/2*(LU(u[m-1+n*(i + 1)],u[m + n*(i + 1)],u[m+1 + n*(i + 1)],h) - func(i + 1,m,h));
+      f[i] = tau/2*(LU(u[m-1+n*(i + 1)],u[m + n*(i + 1)],u[m+1 + n*(i + 1)],h) 
+                        - func(i + 1,m,h)) - u[m + n*(i + 1)];
     }
-    // f[n-2] = 0;
 }
 
 void F2(double *f, int k, int n, double tau, double h, double *u)
 {
-    // f[0] = 0;
     for  (int i = 0; i < n - 2; ++i){
-      f[i] = tau/2*(LU(u[i + 1 + n*(k - 1)],u[i + 1 + n*(k)],u[i + 1 + n*(k + 1)],h) - func(k,i + 1,h)) - u[i + 1 + n*(k)];
-      // f[i] = tau/2*(LU(u[i + 1 + n*(k - 1)],u[i + 1 + n*(k)],u[i + 1 + n*(k + 1)],h) - func(k,i + 1,h));
+      f[i] = tau/2*(LU(u[i + 1 + n*(k - 1)],u[i + 1 + n*(k)],u[i + 1 + n*(k + 1)],h)
+                         - func(k,i + 1,h)) - u[i + 1 + n*(k)];
     }
-    // f[n-2] = 0;
 }
 
 int main()
@@ -120,14 +112,14 @@ int main()
   double *u = new double[N*N + 1];
   double *temp = new double[N*N + 1];
   double tau = TAU(h);
-  difference_scheme(a,b,c,N-2,tau,h); // - or + in b
+  difference_scheme(a,b,c,N-2,tau,h);
 
   for (int i = 0; i < N * N + 1; ++i) {
     u[i] = 0;
     temp[i] = 0;
   }
 
-  for (int l = 0; l < 8; ++l) {
+  for (int l = 0; l < 10; ++l) {
     for (int m = 1; m < N - 1; ++m) {
         F1(f,m,N,tau,h,u);
         solveMatrix(N-2,a,c,b,f,temp + m*N + 1);
@@ -140,15 +132,19 @@ int main()
     }
 
   cout << norm(u,N,h) << endl;
-  cout << u[N+1] << ' ' << analit(1,1,h) << ' ' << u[2*N-2] << ' ' <<  analit(1,N-2,h) << endl;
+  // cout << u[N+1] << ' ' << analit(1,1,h) << ' ' << u[2*N-2] << ' ' <<  analit(1,N-2,h) << endl;
   if (N < 15){
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < N; ++j) {
         cout << u[i*N + j] << ' ';
       }
-      // cout << endl;
-      // cout << a[i] << ' ' << b[i] << ' ' << c[i] << ' ' << endl;
       cout << endl;
     }
   }
+  delete []a;
+  delete []b;
+  delete []c;
+  delete []temp;
+  delete []u;
+  delete []f;
 }

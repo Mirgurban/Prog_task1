@@ -31,8 +31,8 @@ double norm(double *u, int n, double h)
       }
     }  
   }
-  return sqrt(sum);
-  // return max;
+//   return sqrt(sum)/n/n;
+  return max;
 }
 
 void solveMatrix (int n, double *a, double *c, double *b, double *f, double *x)
@@ -119,7 +119,7 @@ int main()
     temp[i] = 0;
   }
 
-  for (int l = 0; l < 10; ++l) {
+  for (int l = 0; l < 12; ++l) {
     for (int m = 1; m < N - 1; ++m) {
         F1(f,m,N,tau,h,u);
         solveMatrix(N-2,a,c,b,f,temp + m*N + 1);

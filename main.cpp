@@ -9,14 +9,16 @@ double func(int k, int m, double h)
 {
   double x = k * h;
   double y = m * h;
-  return 2*(x-x*x + y - y*y);
+  // return 2*(x-x*x + y - y*y);
+  return 2*pi*pi*sin(pi*x)*sin(pi*y);
 }
 
 double analit(int k, int m, double h)
 {
   double x = k * h;
   double y = m * h;
-  return x*(1-x)*y*(1-y);
+  // return x*(1-x)*y*(1-y);
+  return sin(pi*x)*sin(pi*y);
 }
 
 double norm(double *u, int n, double h)
@@ -31,7 +33,7 @@ double norm(double *u, int n, double h)
       }
     }  
   }
-  return sqrt(sum);
+  return sqrt(sum)/n/n;
   // return max;
 }
 
@@ -119,7 +121,7 @@ int main()
     temp[i] = 0;
   }
 
-  for (int l = 0; l < 10; ++l) {
+  for (int l = 0; l < 12; ++l) {
     for (int m = 1; m < N - 1; ++m) {
         F1(f,m,N,tau,h,u);
         solveMatrix(N-2,a,c,b,f,temp + m*N + 1);

@@ -1,9 +1,11 @@
 #include <iostream>
 #include <math.h>
+#include <fstream>
 
 using namespace std;
 
 #define pi 3.141592653589793238462643383279
+#define eps 1.0e-10
 
 double func(int k, int m, double h)
 {
@@ -28,13 +30,13 @@ double norm(double *u, int n, double h)
   for (int k = 0; k < n; ++k) {
     for (int m = 0; m < n; ++m) {
       sum += (analit(k,m,h) - u[k * n + m]) * (analit(k,m,h) - u[k * n + m]);
-      if ((analit(k,m,h) - u[k * n + m]) > max) {
-        max = (analit(k,m,h) - u[k * n + m]);
+      if (fabs(analit(k,m,h) - u[k * n + m]) > max) {
+        max = fabs(analit(k,m,h) - u[k * n + m]);
       }
     }  
   }
-  return sqrt(sum)/n/n;
-  // return max;
+  // return sqrt(sum)/n/n;
+  return max;
 }
 
 void solveMatrix (int n, double *a, double *c, double *b, double *f, double *x)
@@ -121,7 +123,13 @@ int main()
     temp[i] = 0;
   }
 
-  for (int l = 0; l < 12; ++l) {
+  double delta = 1;
+  int count = 0;
+  cout << eps << endl;
+
+  while (fabs(delta - norm(u, N, h)) > eps) {
+    count++;
+    delta = norm(u, N, h);
     for (int m = 1; m < N - 1; ++m) {
         F1(f,m,N,tau,h,u);
         solveMatrix(N-2,a,c,b,f,temp + m*N + 1);
@@ -132,17 +140,25 @@ int main()
         solveMatrix(N-2,a,c,b,f,u + k*N + 1);
       }
     }
+  cout << count << endl;
+  
+  cout << delta << ' ' << norm(u,N,h) << endl;
+  ofstream fout("C:\\Users\\Xiaomi\\Desktop\\function.txt");
 
-  cout << norm(u,N,h) << endl;
-  // cout << u[N+1] << ' ' << analit(1,1,h) << ' ' << u[2*N-2] << ' ' <<  analit(1,N-2,h) << endl;
-  if (N < 15){
+  // fout.open("C:\\Users\\Xiaomi\\Desktop\\function.txt");
+  
+  // if (N < 15){
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < N; ++j) {
-        cout << u[i*N + j] << ' ';
+        // cout << u[i*N + j] << ' ';
+        fout << (u[i*N + j] - analit(i,j,h));
+        // fout <<'f';
+        fout << ' ';
       }
-      cout << endl;
+      fout << '\n';
     }
-  }
+  // }
+  fout.close();
   delete []a;
   delete []b;
   delete []c;

@@ -106,7 +106,7 @@ void F2(double *f, int k, int n, double tau, double h, double *u)
 
 int main()
 {
-  int N = 100;
+  int N = 800;
   double h = 1./(N-1);
 
   double *a = new double[N];
@@ -125,7 +125,7 @@ int main()
 
   double delta = 1;
   int count = 0;
-  cout << eps << endl;
+  // cout << eps << endl;
 
   while (fabs(delta - norm(u, N, h)) > eps) {
     count++;
@@ -142,7 +142,8 @@ int main()
     }
   cout << count << endl;
   
-  cout << delta << ' ' << norm(u,N,h) << endl;
+  // cout << delta << ' ' << norm(u,N,h) << endl;
+  cout << norm(u,N,h) << endl;
   ofstream fout("C:\\Users\\Xiaomi\\Desktop\\function.txt");
 
   // fout.open("C:\\Users\\Xiaomi\\Desktop\\function.txt");
